@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>दिवाली की हार्दिक शुभकामनाएँ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: url('https://www.bhaktiphotos.com/wp-content/uploads/2018/10/Happy-Diwali-Wallpaper-Full-HD-Free-Download.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+        }
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.65);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: rgba(25, 31, 58, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.7);
+            border: 2px solid #ffd700;
+            max-width: 550px;
+            width: 100%;
+        }
+        img.main-gif {
+            max-width: 250px;
+            height: auto;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #ffd700;
+        }
+        h1 {
+            color: #ffd700;
+            font-size: 2.2em;
+            text-shadow: 2px 2px 10px #000;
+        }
+        p {
+            font-size: 1.1em;
+        }
+        #greetingMessage {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .animate h2 {
+            font-size: 2.8em;
+            color: #ff9933;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); text-shadow: 0 0 10px #fff; }
+            50% { transform: scale(1.05); text-shadow: 0 0 20px #ffc107; }
+            100% { transform: scale(1); text-shadow: 0 0 10px #fff; }
+        }
+        input[type="text"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        button img {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas>
+    <audio id="backgroundMusic" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
+
+    <div class="overlay">
+        <div class="container">
+            <!-- यहाँ तुम्हारी इमेज लगी हुई है -->
+            <img class="main-gif" src="https://i.ibb.co/vvPqmVXD/diwali-image.jpg" alt="दीवाली इमेज">
+
+            <div id="greetingMessage" style="display:none;"></div>
+
+            <div id="userInputSection">
+                <h1>अपनी दिवाली की शुभकामनाएँ बनाएँ</h1>
+                <p>अपना नाम लिखें और अपने दोस्तों और परिवार को भेजने के लिए एक लिंक पाएँ।</p>
+                
+                <input type="text" id="nameInput" placeholder="अपना नाम यहाँ लिखें...">
+                <button onclick="generateAndShareOnWhatsApp()">
+                    <img src="https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png" alt="WhatsApp Logo">
+                    WhatsApp पर शेयर करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+
+        function Particle(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 3 - 1.5;
+            this.speedY = Math.random() * 3 - 1.5;
+            this.life = 100;
+        }
+
+        function createParticles(x, y) {
+            const particleCount = 100;
+            const colors = ['#FFD700', '#FF4500', '#ADFF2F', '#00FFFF', '#FF1493'];
+            for (let i = 0; i < particleCount; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.speedX;
+                p.y += p.speedY;
+                p.life--;
+                if (p.life > 0) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                } else {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        function launchFireworks() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height / 2;
+            createParticles(x, y);
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const senderName = urlParams.get('from');
+            if (senderName) {
+                const greetingDiv = document.getElementById('greetingMessage');
+                greetingDiv.innerHTML = `<h2 class="animate">Happy Diwali</h2><h3>from ${decodeURIComponent(senderName)}</h3>`;
+                greetingDiv.style.display = 'block';
+                document.getElementById('userInputSection').style.display = 'none';
+                setInterval(launchFireworks, 333);
+                setInterval(animateParticles, 1000 / 60);
+                const music = document.getElementById('backgroundMusic');
+                music.play().catch(e => console.log("Autoplay was prevented."));
+            }
+        };
+
+        function generateAndShareOnWhatsApp() {
+            const name = document.getElementById('nameInput').value;
+            if (name.trim() === "") {
+                alert("कृपया अपना नाम लिखें!");
+                return;
+            }
+            const baseUrl = window.location.href.split('?')[0];
+            const shareableLink = `${baseUrl}?from=${encodeURIComponent(name)}`;
+            const message = `${name} की तरफ से दिवाली की हार्दिक शुभकामनाएँ! 🪔✨\n\nइस खूबसूरत संदेश को देखने के लिए नीचे दिए गए लिंक पर क्लिक करें:\n${shareableLink}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+	atOptions = {
+		'key' : '4cc2e3f2adae815d70b8191297afb969',
+		'format' : 'iframe',
+		'height' : 50,
+		'width' : 320,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//orientsweptautopsy.com/4cc2e3f2adae815d70b8191297afb969/invoke.js"></script>
